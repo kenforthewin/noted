@@ -6,9 +6,8 @@ let monacoEditor
 
 (function() {
   const path = require('path')
-  const amdLoader = require('./node_modules/monaco-editor/min/vs/loader');
+  const amdLoader = require('monaco-editor/min/vs/loader');
   const amdRequire = amdLoader.require;
-  const amdDefine = amdLoader.require.define;
   function uriFromPath(_path) {
     var pathName = path.resolve(_path).replace(/\\/g, '/');
     if (pathName.length > 0 && pathName.charAt(0) !== '/') {
@@ -38,6 +37,8 @@ let monacoEditor
 })()
 
 window.addEventListener('resize', function() {
+  if (!monacoEditor) return
+
   monacoEditor.layout()
 })
 
