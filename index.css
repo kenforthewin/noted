@@ -1,0 +1,76 @@
+html {
+  height:100%;
+  overflow:hidden;
+  width:100%;
+}
+
+body {
+  height:100%;
+  width:100%;
+  margin:0;
+  display:flex;
+  flex-direction: column;
+}
+
+.title-bar {
+  width: 100%;
+  height: 22px;
+  position: absolute;
+  left: 0;
+  -webkit-app-region: drag;
+  z-index: -1;
+  display: block;
+  top: 0; 
+  flex: none;  
+  border-bottom: 1px;
+  border-bottom-style: solid;
+  border-color: #444444;
+}
+
+.main {
+  height:100%;
+  width:100%;
+  display:flex;
+  flex-direction: row;
+  margin-top: 22px;
+  flex: 1 1;
+  min-height: 0; 
+  padding-top: 3px;
+}
+
+.tabs {
+  min-width: 200px;
+  height:100%;
+  overflow-y: scroll;
+  flex: none;
+  display: block;
+  position: relative;
+  background-color: #2c2c2c;
+  border-right: 3px solid black;
+}
+
+.container {
+  height: 100%;
+  flex: 1 1;
+  min-width: 0;
+}
+
+.md-container {
+  height: 100%;
+  flex: 1 1;
+  min-width: 0;
+  color: rgb(235, 235, 235);
+  overflow-y: scroll;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.hidden {
+  display: none;
+}
+
+.tab {
+  width: 200px;
+  height: 50px;
+  border-bottom: 1px solid #444444;
+}

@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-<html style="height:100%;overflow:hidden;width:100%;">
+<html>
   <head>
+    <link rel="stylesheet" type="text/css" href="./index.css">
+    <link rel="stylesheet" type="text/css" href="./atom-one-dark.css">
     <meta charset="UTF-8">
     <title>Noted</title>
   </head>
-  <body style="height:100%;width:100%;margin:0">
-    <div style="width: 100%; height: 22px; position: absolute; left: 0; -webkit-app-region: drag; z-index: -1; display: block; top: 0;"></div>
-    <div style="height:100%;width:100%;display:flex;flex-direction: row; margin-top: 22px;">
-      <div id="tabs" style="min-width: 200px; height:100%; overflow-y:scroll; flex: none; display: block; position: relative;">Tabs</div>
-      <div id="container" style="height:100%; flex: 1 1; min-width: 0;"></div>
+  <body>
+    <div class="title-bar"></div>
+    <div class="main">
+      <div id="tabs" class="tabs"></div>
+      <div id="container" class="container hidden"></div>
+      <div id="md-container" class="md-container"></div>
     </div>
-    <!-- You can also require other files to run in this process -->
     <script src="./renderer.js"></script>
   </body>
 </html>
