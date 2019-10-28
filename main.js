@@ -1,11 +1,10 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
-
+const shell = require("electron").shell;
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-let monacoEditor;
 
 function createWindow() {
   // Create the browser window.
@@ -19,6 +18,21 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true
     }
+  });
+  const webContents = mainWindow.webContents;
+  const handleRedirect = (e, url) => {
+    if (url != webContents.getURL()) {
+      e.preventDefault();
+      shell.openExternal(url);
+    }
+  };
+
+  webContents.on("will-navigate", handleRedirect);
+  webContents.on("new-window", handleRedirect);
+
+  mainWindow.webContents.on("new-window", function(event, url) {
+    event.preventDefault();
+    shell.openExternal(url);
   });
 
   mainWindow.setSheetOffset(22);

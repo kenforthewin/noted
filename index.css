@@ -32,7 +32,7 @@ body {
   width:100%;
   display:flex;
   flex-direction: row;
-  margin-top: 22px;
+  margin-top: 20px;
   flex: 1 1;
   min-height: 0; 
   padding-top: 3px;
@@ -46,7 +46,6 @@ body {
   display: block;
   position: relative;
   background-color: #2c2c2c;
-  border-right: 3px solid black;
 }
 
 .container {
@@ -61,8 +60,13 @@ body {
   min-width: 0;
   color: rgb(235, 235, 235);
   overflow-y: scroll;
-  padding-left: 8px;
-  padding-right: 8px;
+  padding-left: 25px;
+  padding-right: 25px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.md-container a {
+  color: #0099ff;
 }
 
 .hidden {
@@ -73,4 +77,17 @@ body {
   width: 200px;
   height: 50px;
   border-bottom: 1px solid #444444;
+}
+
+::-webkit-scrollbar {
+	width: 12px;
+  background-color: #2c2c2c;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #555;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #2c2c2c;
 }
