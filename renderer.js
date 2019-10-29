@@ -1,15 +1,11 @@
 const { uriFromPath } = require("./src/utils/uriFromPath");
 
-// This file is required by the index.html file and will
-// be executed in the renderer process for that window.
-// All of the Node.js APIs are available in this process.
-
 let monacoEditor;
 const mdElement = document.getElementById("md-container");
 let editMode = false;
-
 const tabDiv = document.createElement("div");
 tabDiv.className = "tab";
+
 const monacoContainer = document.getElementById("container");
 const path = require("path");
 const amdLoader = require("monaco-editor/min/vs/loader");
@@ -41,6 +37,8 @@ amdRequire(["vs/editor/editor.main"], function() {
     mdElement.innerHTML = el;
 
     monacoEditor.getModel().setValue(note.body);
+
+    nav.renderTabs();
   });
 
   function onDidChangeModelContent(e) {
@@ -61,11 +59,6 @@ amdRequire(["vs/editor/editor.main"], function() {
 
     monacoEditor.layout();
   });
-
-  const tabs = document.getElementById("tabs");
-  for (let i = 0; i < 15; i++) {
-    tabs.append(tabDiv.cloneNode());
-  }
 
   function switchToEditMode(e) {
     editMode = true;

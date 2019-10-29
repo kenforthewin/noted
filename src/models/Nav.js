@@ -11,6 +11,9 @@ const baseMeta = {
   currentNote: null
 };
 
+const tabDiv = document.createElement("div");
+tabDiv.className = "tab";
+
 class Nav {
   constructor() {
     this.setup = this.setup.bind(this);
@@ -85,6 +88,18 @@ class Nav {
     this.currentNote =
       this.currentNote || new Note(`${noteDir}/${noteName}.md`);
     return this.currentNote;
+  }
+
+  renderTabs() {
+    const noteKeys = Object.keys(this.meta.notes);
+    const tabs = document.getElementById("tabs");
+
+    for (let i = noteKeys.length - 1; i >= 0; i--) {
+      const key = `note_${i}`;
+
+      const noteTab = tabDiv.cloneNode();
+      tabs.append(noteTab);
+    }
   }
 }
 
