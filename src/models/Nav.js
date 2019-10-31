@@ -1,10 +1,7 @@
+const { noteDir, metafile } = require("../utils/constants");
+
 const fs = require("fs").promises;
 const Note = require("./Note");
-
-const homedir = require("os").homedir();
-const notedDir = `${homedir}/.noted`;
-const noteDir = `${notedDir}/notes`;
-const metafile = `${notedDir}/meta.json`;
 
 const baseMeta = {
   notes: {},
@@ -24,6 +21,8 @@ class Nav {
     this.firstSetup = this.firstSetup.bind(this);
     this.deleteNote = this.deleteNote.bind(this);
     this.getCurrentNote = this.getCurrentNote.bind(this);
+    this.updateNoteTitle = this.updateNoteTitle.bind(this);
+    this.updateTab = this.updateTab.bind(this);
   }
 
   async setup() {
@@ -36,8 +35,27 @@ class Nav {
     await this.loadMetaFile();
   }
 
+  async updateNoteTitle(note) {
+    const noteTitle = note.body
+      .split("\n")[0]
+      .replace("#", "")
+      .substring(0, 50);
+    if (this.meta.notes[note.name].title !== noteTitle) {
+      this.meta.notes[note.name].title = noteTitle;
+      await this.updateMetaFile();
+      this.updateTab(note.index, noteTitle);
+    }
+  }
+
   async loadMetaFile() {
-    const file = await fs.open(metafile, "r+");
+    let file;
+    try {
+      file = await fs.open(metafile, "r+");
+    } catch (err) {
+      if (err.code === "ENOENT") {
+        file = await fs.open(metafile, "w+");
+      }
+    }
     const fileContents = await file.readFile({ encoding: "utf8" });
 
     if (fileContents.length === 0) {
@@ -54,25 +72,22 @@ class Nav {
   }
 
   async updateMetaFile() {
-    const file = await fs.open(metafile, "r+");
+    const file = await fs.open(metafile, "w+");
     await file.writeFile(JSON.stringify(this.meta));
 
     await file.close();
   }
 
   async createNote() {
-    const noteName = `note_${Object.keys(this.meta.notes).length}`;
-    this.meta.notes[noteName] = {
-      createdAt: new Date().toDateString(),
+    const noteIndex = Object.keys(this.meta.notes).length;
+    const note = new Note(noteIndex, this);
+    await note.resetFile();
+    this.meta.notes[note.name] = {
+      createdAt: new Date().toISOString(),
       title: ""
     };
-    this.meta.currentNote = noteName;
+    this.meta.currentNote = noteIndex;
     await this.updateMetaFile();
-    const file = await fs.open(`${noteDir}/${noteName}.md`, "r+");
-    await file.writeFile("");
-    await file.close();
-
-    return noteName;
   }
 
   async deleteNote(noteName) {
@@ -83,11 +98,24 @@ class Nav {
     await fs.mkdir(noteDir, { recursive: true });
   }
 
-  getCurrentNote() {
-    const noteName = this.meta.currentNote;
-    this.currentNote =
-      this.currentNote || new Note(`${noteDir}/${noteName}.md`);
+  async getCurrentNote() {
+    const noteIndex = this.meta.currentNote;
+    if (!this.currentNote) {
+      this.currentNote = new Note(noteIndex, this);
+      await this.currentNote.readFile();
+    }
+
     return this.currentNote;
+  }
+
+  updateTab(index, title) {
+    const tab = document.getElementById(`tab-${index}`);
+    const tabs = document.getElementById("tabs");
+    const newTab = tabDiv.cloneNode();
+    newTab.id = `tab-${index}`;
+    let t = document.createTextNode(title);
+    newTab.appendChild(t);
+    tabs.replaceChild(newTab, tab);
   }
 
   renderTabs() {
@@ -98,6 +126,10 @@ class Nav {
       const key = `note_${i}`;
 
       const noteTab = tabDiv.cloneNode();
+      noteTab.id = `tab-${i}`;
+
+      let t = document.createTextNode(this.meta.notes[key].title);
+      noteTab.appendChild(t);
       tabs.append(noteTab);
     }
   }

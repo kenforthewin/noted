@@ -31,14 +31,21 @@ amdRequire(["vs/editor/editor.main"], function() {
   // monacoEditor.onKeyDown(onMonacoKeyDown);
 
   let note;
+  let interval;
   nav.setup().then(async function() {
-    note = nav.getCurrentNote();
+    note = await nav.getCurrentNote();
     const el = await note.renderMD();
     mdElement.innerHTML = el;
 
     monacoEditor.getModel().setValue(note.body);
 
     nav.renderTabs();
+
+    interval = setInterval(() => {
+      if (note.dirty && !note.writing) {
+        note.writeFile();
+      }
+    }, 1000);
   });
 
   function onDidChangeModelContent(e) {
@@ -47,11 +54,11 @@ amdRequire(["vs/editor/editor.main"], function() {
     }
   }
 
-  async function switchToMDMode(e) {
+  function switchToMDMode(e) {
     editMode = false;
     mdElement.className = "md-container";
     monacoContainer.className = "container hidden";
-    mdElement.innerHTML = await note.renderMD();
+    mdElement.innerHTML = note.renderMD();
   }
 
   window.addEventListener("resize", function() {
@@ -70,7 +77,7 @@ amdRequire(["vs/editor/editor.main"], function() {
 
   document.addEventListener("keydown", onMonacoKeyDown);
 
-  async function onMonacoKeyDown(e) {
+  function onMonacoKeyDown(e) {
     if (editMode && e.keyCode === 27 /*esc*/) {
       switchToMDMode();
     } else if (!editMode && e.keyCode === 73 /*i*/) {

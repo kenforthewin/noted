@@ -1,16 +1,37 @@
 const { md } = require("../utils/md");
 const fs = require("fs").promises;
+const { noteDir } = require("../utils/constants");
 
 const WAIT_INTERVAL = 200;
 
 class Note {
-  constructor(file) {
-    this.file = file;
+  constructor(index, nav) {
+    this.index = index;
+    this.name = `note_${index}`;
+    this.file = `${noteDir}/${this.name}.md`;
+    this.nav = nav;
+    this.body = "";
+    this.dirty = false;
+    this.writing = false;
 
     this.fileContents = this.fileContents.bind(this);
     this.readFile = this.readFile.bind(this);
     this.writeFile = this.writeFile.bind(this);
     this.updateNote = this.updateNote.bind(this);
+    this.resetFile = this.resetFile.bind(this);
+  }
+
+  async resetFile() {
+    let file;
+    try {
+      file = await fs.open(this.file, "r+");
+    } catch (err) {
+      if (err.code === "ENOENT") {
+        file = await fs.open(this.file, "w+");
+      }
+    }
+    await file.writeFile("");
+    await file.close();
   }
 
   async fileContents(refresh = false) {
@@ -26,17 +47,20 @@ class Note {
   }
 
   async writeFile() {
+    this.writing = true;
     await fs.writeFile(this.file, this.body, { encoding: "utf8" });
+    await this.nav.updateNoteTitle(this);
+    this.dirty = false;
+    this.writing = false;
   }
 
-  async renderMD() {
-    return md.render(await this.fileContents(true));
+  renderMD() {
+    return md.render(this.body);
   }
 
   updateNote(value) {
     this.body = value;
-    clearTimeout(this.timer);
-    this.timer = setTimeout(this.writeFile, WAIT_INTERVAL);
+    this.dirty = true;
   }
 }
 
