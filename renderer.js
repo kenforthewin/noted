@@ -31,7 +31,6 @@ amdRequire(["vs/editor/editor.main"], function() {
   // monacoEditor.onKeyDown(onMonacoKeyDown);
 
   let note;
-  let interval;
   nav.setup().then(async function() {
     note = await nav.getCurrentNote();
     const el = await note.renderMD();
@@ -40,18 +39,20 @@ amdRequire(["vs/editor/editor.main"], function() {
     monacoEditor.getModel().setValue(note.body);
 
     nav.renderTabs();
-
-    interval = setInterval(() => {
-      if (note.dirty && !note.writing) {
-        note.writeFile();
-      }
-    }, 1000);
   });
 
   function onDidChangeModelContent(e) {
     if (note) {
       note.updateNote(monacoEditor.getValue());
     }
+  }
+
+  async function switchNote(newNote) {
+    if (note) {
+      note.clearTimer();
+      await note.writeFile();
+    }
+    note = newNote;
   }
 
   function switchToMDMode(e) {

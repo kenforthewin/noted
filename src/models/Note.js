@@ -19,6 +19,7 @@ class Note {
     this.writeFile = this.writeFile.bind(this);
     this.updateNote = this.updateNote.bind(this);
     this.resetFile = this.resetFile.bind(this);
+    this.clearTimer = this.clearTimer.bind(this);
   }
 
   async resetFile() {
@@ -47,11 +48,13 @@ class Note {
   }
 
   async writeFile() {
-    this.writing = true;
-    await fs.writeFile(this.file, this.body, { encoding: "utf8" });
-    await this.nav.updateNoteTitle(this);
-    this.dirty = false;
-    this.writing = false;
+    if (this.dirty && !this.writing) {
+      this.writing = true;
+      await fs.writeFile(this.file, this.body, { encoding: "utf8" });
+      await this.nav.updateNoteTitle(this);
+      this.dirty = false;
+      this.writing = false;
+    }
   }
 
   renderMD() {
@@ -59,8 +62,15 @@ class Note {
   }
 
   updateNote(value) {
+    console.log(this);
     this.body = value;
     this.dirty = true;
+    this.clearTimer();
+    this.timer = setTimeout(this.writeFile, WAIT_INTERVAL);
+  }
+
+  clearTimer() {
+    clearTimeout(this.timer);
   }
 }
 
