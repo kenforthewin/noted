@@ -1,5 +1,6 @@
 const { uriFromPath } = require("./src/utils/uriFromPath");
-
+const { remote, ipcRenderer } = require("electron");
+const { Menu, MenuItem } = remote;
 let monacoEditor;
 const mdElement = document.getElementById("md-container");
 let editMode = false;
@@ -32,6 +33,7 @@ amdRequire(["vs/editor/editor.main"], function() {
 
   let note;
   nav.setup().then(async function() {
+    nav.onTabClick = onTabClick;
     note = await nav.getCurrentNote();
     const el = await note.renderMD();
     mdElement.innerHTML = el;
@@ -39,20 +41,28 @@ amdRequire(["vs/editor/editor.main"], function() {
     monacoEditor.getModel().setValue(note.body);
 
     nav.renderTabs();
+    ipcRenderer.on("new-note", async () => {
+      await nav.createNote();
+      note = await nav.getCurrentNote();
+      monacoEditor.getModel().setValue(note.body);
+
+      nav.updateTab(note.index);
+      switchToMDMode();
+    });
   });
+
+  async function onTabClick(i) {
+    await this.switchNote(i);
+    note = await this.getCurrentNote();
+    monacoEditor.getModel().setValue(note.body);
+
+    switchToMDMode();
+  }
 
   function onDidChangeModelContent(e) {
     if (note) {
       note.updateNote(monacoEditor.getValue());
     }
-  }
-
-  async function switchNote(newNote) {
-    if (note) {
-      note.clearTimer();
-      await note.writeFile();
-    }
-    note = newNote;
   }
 
   function switchToMDMode(e) {

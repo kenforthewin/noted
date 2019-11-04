@@ -23,6 +23,8 @@ class Nav {
     this.getCurrentNote = this.getCurrentNote.bind(this);
     this.updateNoteTitle = this.updateNoteTitle.bind(this);
     this.updateTab = this.updateTab.bind(this);
+    this.switchNote = this.switchNote.bind(this);
+    this.renderTab = this.renderTab.bind(this);
   }
 
   async setup() {
@@ -86,8 +88,18 @@ class Nav {
       createdAt: new Date().toISOString(),
       title: ""
     };
+    await this.switchNote(noteIndex);
+  }
+
+  async switchNote(noteIndex) {
+    if (this.currentNote) {
+      this.currentNote.clearTimer();
+      await this.currentNote.writeFile();
+    }
     this.meta.currentNote = noteIndex;
+    this.currentNote = null;
     await this.updateMetaFile();
+    await this.getCurrentNote();
   }
 
   async deleteNote(noteName) {
@@ -115,7 +127,27 @@ class Nav {
     newTab.id = `tab-${index}`;
     let t = document.createTextNode(title);
     newTab.appendChild(t);
+    if (!tab) {
+      tabs.prepend(newTab);
+      return;
+    }
     tabs.replaceChild(newTab, tab);
+  }
+
+  renderTab(i) {
+    const key = `note_${i}`;
+
+    const noteTab = tabDiv.cloneNode();
+    noteTab.id = `tab-${i}`;
+
+    let t = document.createTextNode(this.meta.notes[key].title);
+    noteTab.appendChild(t);
+    noteTab.onclick = function() {
+      if (this.onTabClick) {
+        this.onTabClick(i);
+      }
+    }.bind(this);
+    return noteTab;
   }
 
   renderTabs() {
@@ -123,13 +155,7 @@ class Nav {
     const tabs = document.getElementById("tabs");
 
     for (let i = noteKeys.length - 1; i >= 0; i--) {
-      const key = `note_${i}`;
-
-      const noteTab = tabDiv.cloneNode();
-      noteTab.id = `tab-${i}`;
-
-      let t = document.createTextNode(this.meta.notes[key].title);
-      noteTab.appendChild(t);
+      const noteTab = this.renderTab(i);
       tabs.append(noteTab);
     }
   }

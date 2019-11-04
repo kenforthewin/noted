@@ -2,6 +2,8 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
 const shell = require("electron").shell;
+const menu = require("./src/utils/menu");
+const { Menu } = require("electron");
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -20,6 +22,8 @@ function createWindow() {
     }
   });
   const webContents = mainWindow.webContents;
+  newMenu = menu(webContents);
+  Menu.setApplicationMenu(newMenu);
   const handleRedirect = (e, url) => {
     if (url != webContents.getURL()) {
       e.preventDefault();

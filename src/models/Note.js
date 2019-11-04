@@ -62,7 +62,6 @@ class Note {
   }
 
   updateNote(value) {
-    console.log(this);
     this.body = value;
     this.dirty = true;
     this.clearTimer();
