@@ -41,11 +41,13 @@ body {
 .tabs {
   min-width: 200px;
   height:100%;
+  overflow-x: hidden;
   overflow-y: scroll;
   flex: none;
   display: block;
   position: relative;
   background-color: #2c2c2c;
+
 }
 
 .container {
@@ -79,8 +81,12 @@ body {
   border-bottom: 1px solid #444444;
   color: rgb(235, 235, 235);
   font-size: 16px;
-  padding: 5px;
+  padding: 5px 0 5px 5px;
   overflow: hidden;
+}
+
+.tab.selected {
+  background-color: #494949;
 }
 
 ::-webkit-scrollbar {
@@ -94,4 +100,5 @@ body {
 
 ::-webkit-scrollbar-track {
   background-color: #2c2c2c;
+  border-left: 1px solid #444444;
 }

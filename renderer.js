@@ -55,7 +55,6 @@ amdRequire(["vs/editor/editor.main"], function() {
     await this.switchNote(i);
     note = await this.getCurrentNote();
     monacoEditor.getModel().setValue(note.body);
-
     switchToMDMode();
   }
 

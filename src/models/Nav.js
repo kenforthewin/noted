@@ -25,6 +25,7 @@ class Nav {
     this.updateTab = this.updateTab.bind(this);
     this.switchNote = this.switchNote.bind(this);
     this.renderTab = this.renderTab.bind(this);
+    this.renderTabs = this.renderTabs.bind(this);
   }
 
   async setup() {
@@ -96,10 +97,14 @@ class Nav {
       this.currentNote.clearTimer();
       await this.currentNote.writeFile();
     }
+    let noteTab = document.getElementById(`tab-${this.meta.currentNote}`);
+    noteTab.className = "tab";
     this.meta.currentNote = noteIndex;
     this.currentNote = null;
     await this.updateMetaFile();
     await this.getCurrentNote();
+    noteTab = document.getElementById(`tab-${noteIndex}`);
+    noteTab.className = "tab selected";
   }
 
   async deleteNote(noteName) {
@@ -156,6 +161,9 @@ class Nav {
 
     for (let i = noteKeys.length - 1; i >= 0; i--) {
       const noteTab = this.renderTab(i);
+      if (this.meta.currentNote === i) {
+        noteTab.className = "tab selected";
+      }
       tabs.append(noteTab);
     }
   }
