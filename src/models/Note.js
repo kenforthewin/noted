@@ -22,7 +22,7 @@ class Note {
     this.clearTimer = this.clearTimer.bind(this);
   }
 
-  async resetFile() {
+  async resetFile(body = "") {
     let file;
     try {
       file = await fs.open(this.file, "r+");
@@ -31,7 +31,7 @@ class Note {
         file = await fs.open(this.file, "w+");
       }
     }
-    await file.writeFile("");
+    await file.writeFile(body);
     await file.close();
   }
 

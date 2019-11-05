@@ -60,7 +60,7 @@ body {
   height: 100%;
   flex: 1 1;
   min-width: 0;
-  color: rgb(235, 235, 235);
+  color: rgb(179, 179, 179);
   overflow-y: scroll;
   padding-left: 25px;
   padding-right: 25px;
@@ -79,10 +79,11 @@ body {
   width: 200px;
   height: 37px;
   border-bottom: 1px solid #444444;
-  color: rgb(235, 235, 235);
+  color: rgb(179, 179, 179);
   font-size: 16px;
   padding: 5px 0 5px 5px;
   overflow: hidden;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .tab.selected {

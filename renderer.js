@@ -82,6 +82,12 @@ amdRequire(["vs/editor/editor.main"], function() {
     mdElement.className = "md-container hidden";
     monacoContainer.className = "container";
     monacoEditor.layout();
+    monacoEditor.setSelection(
+      new monaco.Selection(Infinity, Infinity, Infinity, Infinity)
+    );
+    setTimeout(() => {
+      monacoEditor.focus();
+    }, 200);
   }
   mdElement.ondblclick = switchToEditMode;
 

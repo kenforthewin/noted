@@ -1,4 +1,4 @@
-const { noteDir, metafile } = require("../utils/constants");
+const { noteDir, metafile, firstNote } = require("../utils/constants");
 
 const fs = require("fs").promises;
 const Note = require("./Note");
@@ -46,7 +46,7 @@ class Nav {
     if (this.meta.notes[note.name].title !== noteTitle) {
       this.meta.notes[note.name].title = noteTitle;
       await this.updateMetaFile();
-      this.updateTab(note.index, noteTitle);
+      this.updateTab(note.index);
     }
   }
 
@@ -71,7 +71,7 @@ class Nav {
 
   async firstSetup() {
     this.meta = baseMeta;
-    await this.createNote();
+    await this.createNote(firstNote, false);
   }
 
   async updateMetaFile() {
@@ -81,14 +81,18 @@ class Nav {
     await file.close();
   }
 
-  async createNote() {
+  async createNote(body = "", updateTab = true) {
     const noteIndex = Object.keys(this.meta.notes).length;
     const note = new Note(noteIndex, this);
-    await note.resetFile();
+    await note.resetFile(body);
     this.meta.notes[note.name] = {
       createdAt: new Date().toISOString(),
-      title: ""
+      title: "",
+      body
     };
+    if (updateTab) {
+      this.updateTab(noteIndex);
+    }
     await this.switchNote(noteIndex);
   }
 
@@ -98,13 +102,17 @@ class Nav {
       await this.currentNote.writeFile();
     }
     let noteTab = document.getElementById(`tab-${this.meta.currentNote}`);
-    noteTab.className = "tab";
+    if (noteTab) {
+      noteTab.className = "tab";
+    }
     this.meta.currentNote = noteIndex;
     this.currentNote = null;
     await this.updateMetaFile();
     await this.getCurrentNote();
     noteTab = document.getElementById(`tab-${noteIndex}`);
-    noteTab.className = "tab selected";
+    if (noteTab) {
+      noteTab.className = "tab selected";
+    }
   }
 
   async deleteNote(noteName) {
@@ -125,17 +133,25 @@ class Nav {
     return this.currentNote;
   }
 
-  updateTab(index, title) {
+  updateTab(index) {
     const tab = document.getElementById(`tab-${index}`);
+
     const tabs = document.getElementById("tabs");
-    const newTab = tabDiv.cloneNode();
-    newTab.id = `tab-${index}`;
-    let t = document.createTextNode(title);
-    newTab.appendChild(t);
     if (!tab) {
-      tabs.prepend(newTab);
+      tabs.prepend(this.renderTab(index));
       return;
     }
+    const key = `note_${index}`;
+    const newTab = tab.cloneNode();
+    newTab.id = `tab-${index}`;
+    let t = document.createTextNode(this.meta.notes[key].title);
+    newTab.appendChild(t);
+    newTab.onclick = function() {
+      if (this.onTabClick) {
+        this.onTabClick(index);
+      }
+    }.bind(this);
+
     tabs.replaceChild(newTab, tab);
   }
 
