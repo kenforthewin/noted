@@ -89,7 +89,9 @@ amdRequire(["vs/editor/editor.main"], function() {
       monacoEditor.focus();
     }, 200);
   }
-  mdElement.ondblclick = switchToEditMode;
+
+  //
+  // mdElement.ondblclick = switchToEditMode;
 
   document.addEventListener("keydown", onMonacoKeyDown);
 

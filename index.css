@@ -84,6 +84,7 @@ body {
   padding: 5px 0 5px 5px;
   overflow: hidden;
   font-family: Arial, Helvetica, sans-serif;
+  cursor: default;
 }
 
 .tab.selected {

@@ -1,18 +1,15 @@
 {
   "name": "noted",
   "version": "1.0.0",
-  "description": "A markdown notes application",
+  "description": "A markdown note application",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/kenforthewin/noted",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "markdown",
+    "notes"
   ],
   "author": "GitHub",
   "license": "CC0-1.0",
