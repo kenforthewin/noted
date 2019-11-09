@@ -12,7 +12,7 @@
     "notes"
   ],
   "author": "GitHub",
-  "license": "CC0-1.0",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^7.0.0"
   },
