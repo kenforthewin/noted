@@ -81,8 +81,9 @@ body {
   border-bottom: 1px solid #444444;
   color: rgb(179, 179, 179);
   font-size: 16px;
-  padding: 5px 0 5px 5px;
+  padding: 10px 0 10px 10px;
   overflow: hidden;
+  text-overflow:  ellipsis;
   font-family: Arial, Helvetica, sans-serif;
   cursor: default;
 }
