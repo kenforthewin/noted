@@ -30,6 +30,7 @@ const getMenu = webContents => {
         {
           id: "new-note",
           label: "New note",
+          accelerator: "CmdOrCtrl+N",
           click: () => webContents.send("new-note")
         },
         isMac ? { role: "close" } : { role: "quit" }

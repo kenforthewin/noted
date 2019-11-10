@@ -47,7 +47,7 @@ amdRequire(["vs/editor/editor.main"], function() {
       monacoEditor.getModel().setValue(note.body);
 
       nav.updateTab(note.index);
-      switchToMDMode();
+      switchToEditMode();
     });
   });
 
