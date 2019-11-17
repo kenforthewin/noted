@@ -33,6 +33,12 @@ const getMenu = webContents => {
           accelerator: "CmdOrCtrl+N",
           click: () => webContents.send("new-note")
         },
+        {
+          id: "delete-note",
+          label: "Delete current note",
+          accelerator: "CmdOrCtrl+D",
+          click: () => webContents.send("delete-note")
+        },
         isMac ? { role: "close" } : { role: "quit" }
       ]
     },

@@ -26,6 +26,7 @@ class Nav {
     this.switchNote = this.switchNote.bind(this);
     this.renderTab = this.renderTab.bind(this);
     this.renderTabs = this.renderTabs.bind(this);
+    this.orderedKeys = this.orderedKeys.bind(this);
   }
 
   async setup() {
@@ -82,15 +83,18 @@ class Nav {
   }
 
   async createNote(body = "", updateTab = true) {
-    const noteIndex = Object.keys(this.meta.notes).length;
+    let noteIndex = 0;
+    if (this.orderedKeys().length > 0) {
+      noteIndex = parseInt(this.orderedKeys()[0].split("_")[1]) + 1;
+    }
     const note = new Note(noteIndex, this);
     await note.resetFile(body);
     this.meta.notes[note.name] = {
       createdAt: new Date().toISOString(),
-      title: "",
-      body
+      title: ""
     };
     if (updateTab) {
+      this.orderedKeys(true);
       this.updateTab(noteIndex);
     }
     await this.switchNote(noteIndex);
@@ -115,8 +119,32 @@ class Nav {
     }
   }
 
-  async deleteNote(noteName) {
+  newNoteIndex(direction = "down") {
+    if (!this.currentNote) return;
+    const keylength = this.orderedKeys().length;
+    const orderedIndex = this.orderedKeys().indexOf(this.currentNote.name);
+    const newIndex = orderedIndex - (direction === "up" ? 1 : -1);
+
+    if (newIndex < 0 || newIndex >= keylength) {
+      return -1;
+    }
+    return parseInt(this.orderedKeys()[newIndex].split("_")[1]);
+  }
+
+  async deleteNote() {
+    const noteName = this.currentNote.name;
     delete this.meta.notes[noteName];
+    this.currentNote.clearTimer();
+    await this.currentNote.deleteFile();
+
+    const i = this.currentNote.index;
+
+    if (this.orderedKeys(true).length === 0) {
+      await this.createNote();
+    } else {
+      await this.onTabClick(this.newNoteIndex());
+    }
+    this.removeTab(i);
   }
 
   async createNotedDir() {
@@ -131,6 +159,10 @@ class Nav {
     }
 
     return this.currentNote;
+  }
+
+  removeTab(index) {
+    document.getElementById(`tab-${index}`).remove();
   }
 
   updateTab(index) {
@@ -172,16 +204,30 @@ class Nav {
   }
 
   renderTabs() {
-    const noteKeys = Object.keys(this.meta.notes);
     const tabs = document.getElementById("tabs");
 
-    for (let i = noteKeys.length - 1; i >= 0; i--) {
+    this.orderedKeys().forEach(key => {
+      const i = parseInt(key.split("_")[1]);
       const noteTab = this.renderTab(i);
       if (this.meta.currentNote === i) {
         noteTab.className = "tab selected";
       }
       tabs.append(noteTab);
+    });
+  }
+
+  orderedKeys(refresh = false) {
+    if (this.keysOrdered && !refresh) {
+      return this.keysOrdered;
     }
+    this.keysOrdered = Object.keys(this.meta.notes).sort((a, b) => {
+      if (this.meta.notes[a].createdAt > this.meta.notes[b].createdAt) {
+        return -1;
+      }
+
+      return 1;
+    });
+    return this.keysOrdered;
   }
 }
 

@@ -1,6 +1,6 @@
 const { uriFromPath } = require("./src/utils/uriFromPath");
 const { remote, ipcRenderer } = require("electron");
-const { Menu, MenuItem } = remote;
+const { dialog } = remote;
 let monacoEditor;
 const mdElement = document.getElementById("md-container");
 let editMode = false;
@@ -48,9 +48,27 @@ amdRequire(["vs/editor/editor.main"], function() {
       nav.updateTab(note.index);
       switchToEditMode();
     });
+    ipcRenderer.on("delete-note", async () => {
+      const dialogResponse = await dialog.showMessageBox({
+        message: "Are you sure? This note will be permanently deleted.",
+        type: "warning",
+        buttons: ["Cancel", "Delete"],
+        defaultId: 1,
+        cancelId: 0
+      });
+
+      if (dialogResponse.response === 1) {
+        await nav.deleteNote();
+        note = await nav.getCurrentNote();
+        monacoEditor.getModel().setValue(note.body);
+        switchToMDMode();
+      }
+    });
   });
 
   async function onTabClick(i) {
+    if (i < 0) return;
+
     await this.switchNote(i);
     note = await this.getCurrentNote();
     monacoEditor.getModel().setValue(note.body);
@@ -97,15 +115,8 @@ amdRequire(["vs/editor/editor.main"], function() {
     } else if (!editMode && e.key === "i") {
       switchToEditMode();
     } else if (!editMode && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
-      if (!note) return;
-      const keylength = Object.keys(nav.meta.notes).length;
-      const newIndex = note.index + (e.key === "ArrowUp" ? 1 : -1);
-
-      if (newIndex < 0 || newIndex >= keylength) {
-        return;
-      }
-
-      onTabClick.bind(nav)(newIndex);
+      newNoteIndex = nav.newNoteIndex(e.key === "ArrowUp" ? "up" : "down");
+      nav.onTabClick(newNoteIndex);
     }
   }
 });

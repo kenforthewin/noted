@@ -20,6 +20,11 @@ class Note {
     this.updateNote = this.updateNote.bind(this);
     this.resetFile = this.resetFile.bind(this);
     this.clearTimer = this.clearTimer.bind(this);
+    this.deleteFile = this.deleteFile.bind(this);
+  }
+
+  async deleteFile() {
+    await fs.unlink(this.file);
   }
 
   async resetFile(body = "") {
