@@ -14,7 +14,7 @@
   "author": "GitHub",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^7.0.0"
+    "electron": "^15.5.5"
   },
   "dependencies": {
     "highlight.js": "^9.15.10",
